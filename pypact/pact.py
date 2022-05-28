@@ -56,6 +56,8 @@ class Pact:
 
         @staticmethod
         def sign(msg, keypair):
+            print("from sign")
+            print(msg)
             hs_bin = Pact.Crypto.hash_bin(msg)
             hsh = Pact.Crypto.b64_url_encoded_hash(hs_bin)
             sig_bin = signing.SigningKey(seed=keypair['secretKey'],
@@ -64,6 +66,8 @@ class Pact:
 
         @staticmethod
         def sign_map(msg, kp):
+            print("from signmap")
+            print(msg)
             hs_bin = Pact.Crypto.hash_bin(msg)
             hsh = Pact.Crypto.b64_url_encoded_hash(hs_bin)
             if "publicKey" in kp.keys() and "secretKey" in kp.keys():
@@ -73,11 +77,16 @@ class Pact:
 
         @staticmethod
         def attach_sig(msg, kp_array):
+            print("from attachsig")
+            print(msg)
             hs_bin = Pact.Crypto.hash_bin(msg)
             hsh = Pact.Crypto.b64_url_encoded_hash(hs_bin)
             if len(kp_array) == 0:
                 return [{"hash": hsh, "sig": None}]
-            return list(map(Pact.Crypto.sign_map, msg, kp_array))
+            sig_list = []
+            for kp in kp_array:
+                sig_list.append(Pact.Crypto.sign_map(msg, kp))
+            return sig_list
 
     class Api:
         def __init__(self):
@@ -100,8 +109,8 @@ class Pact:
 
         @staticmethod
         def prepare_exec_cmd(pact_code, env_data={}, meta={}, network_id=None,
-                             nonce=datetime.now().isoformat(), keypairs=[]):
-            kp_array = utils.as_list(keypairs)
+                             nonce=datetime.now().isoformat(), key_pairs=[]):
+            kp_array = utils.as_list(key_pairs)
             signers = list(map(utils.mk_signer, kp_array))
             cmd_json = {
                 "networkId": network_id,
@@ -278,7 +287,7 @@ class Pact:
             if api_host is None:
                 raise Exception("No apiHost provided")
             send_cmds = list(map(Pact.Fetch.make_prepare_cmd, utils.as_list(send_cmd)))
-            return rt.post(api_host + '/api/v1/send', json=send_cmds, headers=utils.get_headers(), timeout=10)
+            return rt.post(api_host + '/api/v1/send', json=Pact.Api.mk_public_send(send_cmds), headers=utils.get_headers(), timeout=10)
 
         @staticmethod
         def send(send_cmd, api_host):

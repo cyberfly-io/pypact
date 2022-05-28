@@ -30,8 +30,8 @@ def as_list(single_or_list):
 
 def mk_signer(kp):
     if kp.get('clist'):
-        return {"clist": as_list(kp.clist), "pubKey": kp.get("public_key")}
-    return {"pubKey": kp.get('public_key')}
+        return {"clist": as_list(kp.get('clist')), "pubKey": kp.get("publicKey")}
+    return {"pubKey": kp.get('publicKey')}
 
 
 def pull_sig(s):
