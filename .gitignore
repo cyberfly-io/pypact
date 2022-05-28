@@ -1,3 +1,5 @@
 .idea
-pypact/config.py
 pypact/__pycache__/
+build/
+dist/
+pypact_lang.egg-info/

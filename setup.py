@@ -1,13 +1,14 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='pypact',
-    version='0.2',
+    name='pypact-lang',
+    version='0.1',
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'ed25519',
         'requests',
-    ]
+        'pynacl'
+    ],
+    url='https://github.com/cyberfly-io/pypact'
 )
 
