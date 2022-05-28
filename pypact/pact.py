@@ -14,6 +14,7 @@ class Pact:
     def __init__(self):
         self.crypto = self.Crypto()
         self.api = self.Api()
+        self.lang = self.Lang()
         self.simple = self.Simple()
         self.fetch = self.Fetch()
 
@@ -46,36 +47,36 @@ class Pact:
             kp = SigningKey.generate()
             sk = kp.encode(encoder=HexEncoder).decode("utf-8")
             pk = kp.verify_key.encode(encoder=HexEncoder).decode("utf-8")
-            return {"public_key": pk, "secret_key": sk}
+            return {"publicKey": pk, "secretKey": sk}
 
         @staticmethod
         def restore_key_from_secret(secret):
             kp = SigningKey(seed=secret, encoder=HexEncoder)
-            return {"public_key": kp.verify_key.encode(encoder=HexEncoder).decode("utf-8"), "secret_key": secret}
+            return {"publicKey": kp.verify_key.encode(encoder=HexEncoder).decode("utf-8"), "secretKey": secret}
 
         @staticmethod
         def sign(msg, keypair):
             hs_bin = Pact.Crypto.hash_bin(msg)
             hsh = Pact.Crypto.b64_url_encoded_hash(hs_bin)
-            sig_bin = signing.SigningKey(seed=keypair['secret_key'],
+            sig_bin = signing.SigningKey(seed=keypair['secretKey'],
                                          encoder=HexEncoder).sign(hs_bin, encoder=HexEncoder)
-            return {"hash": hsh, "sig": sig_bin.signature.decode("utf-8"), "pubKey": keypair['public_key']}
+            return {"hash": hsh, "sig": sig_bin.signature.decode("utf-8"), "pubKey": keypair['publicKey']}
 
         @staticmethod
         def sign_map(msg, kp):
             hs_bin = Pact.Crypto.hash_bin(msg)
             hsh = Pact.Crypto.b64_url_encoded_hash(hs_bin)
-            if "public_key" in kp.keys() and "secret_key" in kp.keys():
+            if "publicKey" in kp.keys() and "secretKey" in kp.keys():
                 return Pact.Crypto.sign(msg, kp)
             else:
-                return {"hash": hsh, "sig": None, "publicKey": kp['public_key']}
+                return {"hash": hsh, "sig": None, "publicKey": kp['publicKey']}
 
         @staticmethod
         def attach_sig(msg, kp_array):
-            hsbin = Pact.Crypto.hash_bin(msg)
-            hsh = Pact.Crypto.b64_url_encoded_hash(hsbin)
+            hs_bin = Pact.Crypto.hash_bin(msg)
+            hsh = Pact.Crypto.b64_url_encoded_hash(hs_bin)
             if len(kp_array) == 0:
-                return {"hash": hsh, "sig": None}
+                return [{"hash": hsh, "sig": None}]
             return list(map(Pact.Crypto.sign_map, msg, kp_array))
 
     class Api:
@@ -84,6 +85,9 @@ class Pact:
 
         @staticmethod
         def filter_sig(sig):
+            s = sig.get('sig')
+            if s is None:
+                return {}
             return {"sig": sig.get('sig')}
 
         @staticmethod
@@ -98,7 +102,7 @@ class Pact:
         def prepare_exec_cmd(pact_code, env_data={}, meta={}, network_id=None,
                              nonce=datetime.now().isoformat(), keypairs=[]):
             kp_array = utils.as_list(keypairs)
-            signers = map(utils.mk_signer, kp_array)
+            signers = list(map(utils.mk_signer, kp_array))
             cmd_json = {
                 "networkId": network_id,
                 "payload": {
@@ -120,7 +124,7 @@ class Pact:
                              network_id=None,
                              nonce=datetime.now().isoformat(), key_pairs=[]):
             kp_array = utils.as_list(key_pairs)
-            signers = map(utils.mk_signer, kp_array)
+            signers = list(map(utils.mk_signer, kp_array))
             cmd_json = {
                 "networkId": network_id,
                 "payload": {
@@ -172,7 +176,7 @@ class Pact:
             def prepare_exec_cmd(pact_code, env_data={}, meta={}, network_id=None,
                                  nonce=datetime.now().isoformat(), key_pairs=[]):
                 kp_array = utils.as_list(key_pairs)
-                signers = map(utils.mk_signer, kp_array)
+                signers = list(map(utils.mk_signer, kp_array))
                 cmd_json = {
                     "networkId": network_id,
                     "payload": {
@@ -203,7 +207,7 @@ class Pact:
                                  network_id=None,
                                  nonce=datetime.now().isoformat(), key_pairs=[]):
                 kp_array = utils.as_list(key_pairs)
-                signers = map(utils.mk_signer, kp_array)
+                signers = list(map(utils.mk_signer, kp_array))
                 cmd_json = {
                     "networkId": network_id,
                     "payload": {
@@ -243,7 +247,7 @@ class Pact:
             for cmd in cmds:
                 hsh = cmd.get('hash')
                 if hsh is None:
-                    raise TypeError("maleformed object, expected 'hash' key in every cmd: " + json.dumps(exec_msg))
+                    raise TypeError("malformed object, expected 'hash' key in every cmd: " + json.dumps(exec_msg))
                 rks.append(hsh)
             return {"requestKeys": utils.unique(rks)}
 
@@ -256,7 +260,7 @@ class Pact:
             for cmd in cmds:
                 hsh = cmd.get('hash')
                 if hsh is None:
-                    raise TypeError("maleformed object, expected 'hash' key in every cmd: " + json.dumps(exec_msg))
+                    raise TypeError("malformed object, expected 'hash' key in every cmd: " + json.dumps(exec_msg))
                 rks.append(hsh)
             return {"listen": rks[0]}
 
@@ -267,17 +271,17 @@ class Pact:
                                                          cmd['envData'], cmd['meta'], cmd['networkId'], cmd['nonce'],
                                                          cmd['keyPairs'])
             return Pact.Simple.Exec.prepare_exec_cmd(cmd['pactCode'], cmd['envData'], cmd['meta'], cmd['networkId'],
-                                                     cmd['nonce'], cmd['keyPair'])
+                                                     cmd['nonce'], cmd['keyPairs'])
 
         @staticmethod
         def fetch_send_raw(send_cmd, api_host):
             if api_host is None:
                 raise Exception("No apiHost provided")
-            send_cmds = map(Pact.Fetch.make_prepare_cmd, utils.as_list(send_cmd))
+            send_cmds = list(map(Pact.Fetch.make_prepare_cmd, utils.as_list(send_cmd)))
             return rt.post(api_host + '/api/v1/send', json=send_cmds, headers=utils.get_headers(), timeout=10)
 
         @staticmethod
-        def fetch_send(send_cmd, api_host):
+        def send(send_cmd, api_host):
             res = Pact.Fetch.fetch_send_raw(send_cmd, api_host)
             return utils.parse_res(res)
 
@@ -288,7 +292,7 @@ class Pact:
             return rt.post(api_host + '/spv', json=spv_cmd, headers=utils.get_headers(), timeout=10)
 
         @staticmethod
-        def fetch_spv(spv_cmd, api_host):
+        def spv(spv_cmd, api_host):
             res = Pact.Fetch.fetch_spv_raw(spv_cmd, api_host)
 
             return utils.parse_res(res)
@@ -299,11 +303,12 @@ class Pact:
                 raise Exception("No apiHost provided")
             local_data = Pact.Simple.Exec.prepare_exec_cmd(local_cmd['pactCode'], local_cmd['envData'],
                                                            local_cmd['meta'], local_cmd['networkId'],
-                                                           local_cmd['nonce'], local_cmd['keyPair'])
+                                                           local_cmd['nonce'], local_cmd['keyPairs'])
+
             return rt.post(api_host + '/api/v1/local', json=local_data, headers=utils.get_headers(), timeout=10)
 
         @staticmethod
-        def fetch_local(local_cmd, api_host):
+        def local(local_cmd, api_host):
             res = Pact.Fetch.fetch_local_raw(local_cmd, api_host)
             return utils.parse_res(res)
 
@@ -314,7 +319,7 @@ class Pact:
             return rt.post(api_host + '/api/v1/poll', json=poll_cmd, headers=utils.get_headers(), timeout=10)
 
         @staticmethod
-        def fetch_poll(poll_cmd, api_host):
+        def poll(poll_cmd, api_host):
             res = Pact.Fetch.fetch_poll_raw(poll_cmd, api_host)
             return utils.parse_res(res)
 
@@ -326,7 +331,7 @@ class Pact:
             return rt.post(api_host + '/api/v1/listen', json=listen_cmd, headers=utils.get_headers(), timeout=10)
 
         @staticmethod
-        def fetch_listen(listen_cmd, api_host):
+        def listen(listen_cmd, api_host):
             res = Pact.Fetch.fetch_listen_raw(listen_cmd, api_host)
             return utils.parse_res(res)
 

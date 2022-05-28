@@ -23,7 +23,7 @@ def int_to_hex(number):
 
 
 def as_list(single_or_list):
-    if isinstance(list, single_or_list):
+    if isinstance(single_or_list, list):
         return single_or_list
     return [single_or_list]
 
@@ -35,7 +35,7 @@ def mk_signer(kp):
 
 
 def pull_sig(s):
-    if s.get('sig') is None:
+    if 'sig' not in s.keys():
         raise TypeError("Expected to find keys of name 'sig' in " + json.dumps(s))
     return {"sig": s.get('sig')}
 
@@ -53,8 +53,7 @@ def unique(arr):
 
 
 def get_headers():
-    return {"Content-Type": "application/json", "Accept": "*/*", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0",
-            "Accept-Language": "en-US,en;q=0.5", "Accept-Encoding": "gzip, deflate"}
+    return {"Content-Type": "application/json"}
 
 
 def parse_res(raw):
