@@ -274,7 +274,7 @@ class Pact:
             if api_host is None:
                 raise Exception("No apiHost provided")
             send_cmds = map(Pact.Fetch.make_prepare_cmd, utils.as_list(send_cmd))
-            return rt.post(api_host + '/api/v1/send', json=send_cmds, headers=utils.get_headers())
+            return rt.post(api_host + '/api/v1/send', json=send_cmds, headers=utils.get_headers(), timeout=10)
 
         @staticmethod
         def fetch_send(send_cmd, api_host):
@@ -285,7 +285,7 @@ class Pact:
         def fetch_spv_raw(spv_cmd, api_host):
             if api_host is None:
                 raise Exception("No apiHost provided")
-            return rt.post(api_host + '/spv', json=spv_cmd, headers=utils.get_headers())
+            return rt.post(api_host + '/spv', json=spv_cmd, headers=utils.get_headers(), timeout=10)
 
         @staticmethod
         def fetch_spv(spv_cmd, api_host):
@@ -300,7 +300,7 @@ class Pact:
             local_data = Pact.Simple.Exec.prepare_exec_cmd(local_cmd['pactCode'], local_cmd['envData'],
                                                            local_cmd['meta'], local_cmd['networkId'],
                                                            local_cmd['nonce'], local_cmd['keyPair'])
-            return rt.post(api_host + '/api/v1/local', json=local_data, headers=utils.get_headers())
+            return rt.post(api_host + '/api/v1/local', json=local_data, headers=utils.get_headers(), timeout=10)
 
         @staticmethod
         def fetch_local(local_cmd, api_host):
@@ -311,7 +311,7 @@ class Pact:
         def fetch_poll_raw(poll_cmd, api_host):
             if api_host is None:
                 raise Exception("No apiHost provided")
-            return rt.post(api_host + '/api/v1/poll', json=poll_cmd, headers=utils.get_headers())
+            return rt.post(api_host + '/api/v1/poll', json=poll_cmd, headers=utils.get_headers(), timeout=10)
 
         @staticmethod
         def fetch_poll(poll_cmd, api_host):
@@ -322,7 +322,8 @@ class Pact:
         def fetch_listen_raw(listen_cmd, api_host):
             if api_host is None:
                 raise Exception("No apiHost provided")
-            return rt.post(api_host + '/api/v1/listen', json=listen_cmd, headers=utils.get_headers())
+            print(listen_cmd)
+            return rt.post(api_host + '/api/v1/listen', json=listen_cmd, headers=utils.get_headers(), timeout=10)
 
         @staticmethod
         def fetch_listen(listen_cmd, api_host):
@@ -332,6 +333,6 @@ class Pact:
         @staticmethod
         def send_signed(signed_cmd, api_host):
             cmd = {"cmds": [signed_cmd]}
-            res = rt.post(api_host + '/api/v1/send', json=cmd, headers=utils.get_headers())
+            res = rt.post(api_host + '/api/v1/send', json=cmd, headers=utils.get_headers(), timeout=10)
             return res.json()
 

@@ -53,7 +53,8 @@ def unique(arr):
 
 
 def get_headers():
-    return {"Content-Type": "application/json"}
+    return {"Content-Type": "application/json", "Accept": "*/*", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:56.0) Gecko/20100101 Firefox/56.0",
+            "Accept-Language": "en-US,en;q=0.5", "Accept-Encoding": "gzip, deflate"}
 
 
 def parse_res(raw):
