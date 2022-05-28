@@ -1,7 +1,16 @@
 
 ## Usage
 
-#note secrets used in this example is for demo purpose only don't use it for mainnet
+# Install:
+
+```shell
+pip3 install pypact-lang
+```
+
+# note: secrets used in this example is for demo purpose only don't use it for mainnet
+
+
+
 
 Listen:
 
