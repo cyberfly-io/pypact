@@ -169,11 +169,12 @@ class Pact:
         @staticmethod
         def mk_exp(module_and_function, namespace=None, **kwargs):
             if namespace:
-                string = "("+namespace+"."+module_and_function+" "
+                string = "("+namespace+"."+module_and_function
             else:
                 string = "("+module_and_function+" "
             for key, value in kwargs.items():
-                string += json.dumps(value)
+                string += " " + value if str(value).startswith('(') or str(value).startswith('[') \
+                    else " " + json.dumps(value)
             return string+")"
 
     class Simple:
