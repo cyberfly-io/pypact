@@ -7,8 +7,23 @@
 pip3 install pypact-lang
 ```
 
-### note: secrets used in this example is for demo purpose only don't use it for mainnet
+### note: secrets used in this example is for demo purpose only
 
+
+Make pact expression:
+
+```python
+from pypact.pact import Pact
+
+pact = Pact()
+
+# without namespace
+print(pact.lang.mk_exp(module_and_function="coin.details",
+                       account="k:10375651f1ca0110468152bb8f47b7b8a469e36dfab1c83adf60cab84b5726d3"))
+# with namespace
+print(pact.lang.mk_exp(module_and_function="flux.get-balance", namespace="runonflux",
+                       account="k:10375651f1ca0110468152bb8f47b7b8a469e36dfab1c83adf60cab84b5726d3"))
+```
 
 
 
