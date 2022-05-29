@@ -56,8 +56,6 @@ class Pact:
 
         @staticmethod
         def sign(msg, keypair):
-            print("from sign")
-            print(msg)
             hs_bin = Pact.Crypto.hash_bin(msg)
             hsh = Pact.Crypto.b64_url_encoded_hash(hs_bin)
             sig_bin = signing.SigningKey(seed=keypair['secretKey'],
@@ -66,8 +64,6 @@ class Pact:
 
         @staticmethod
         def sign_map(msg, kp):
-            print("from signmap")
-            print(msg)
             hs_bin = Pact.Crypto.hash_bin(msg)
             hsh = Pact.Crypto.b64_url_encoded_hash(hs_bin)
             if "publicKey" in kp.keys() and "secretKey" in kp.keys():
@@ -77,8 +73,6 @@ class Pact:
 
         @staticmethod
         def attach_sig(msg, kp_array):
-            print("from attachsig")
-            print(msg)
             hs_bin = Pact.Crypto.hash_bin(msg)
             hsh = Pact.Crypto.b64_url_encoded_hash(hs_bin)
             if len(kp_array) == 0:
@@ -346,7 +340,6 @@ class Pact:
         def fetch_listen_raw(listen_cmd, api_host):
             if api_host is None:
                 raise Exception("No apiHost provided")
-            print(listen_cmd)
             return rt.post(api_host + '/api/v1/listen', json=listen_cmd, headers=utils.get_headers(), timeout=10)
 
         @staticmethod
