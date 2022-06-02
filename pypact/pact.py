@@ -147,6 +147,7 @@ class Pact:
             sigs = Pact.Crypto.attach_sig(cmd, kp_array)
             return Pact.Api.mk_single_cmd(sigs, cmd)
 
+        @staticmethod
         def mk_public_send(cmds):
             return {"cmds": utils.as_list(cmds)}
 
