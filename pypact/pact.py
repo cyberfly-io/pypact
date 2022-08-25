@@ -83,7 +83,7 @@ class Pact:
             return sig_list
 
         @staticmethod
-        def verify(self, msg, public_key, signature):
+        def verify(msg, public_key, signature):
             try:
                 verify_key_hex = bytes(public_key, "utf-8")
                 verify_key = VerifyKey(verify_key_hex, encoder=HexEncoder)

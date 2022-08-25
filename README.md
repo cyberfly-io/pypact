@@ -99,6 +99,21 @@ sig = pact.crypto.sign("message to be signed", key_pair)
 print(sig)
 ```
 
+Verify:
+
+```python
+from pypact.pact import Pact
+
+pact = Pact()
+
+result = pact.verify("message", "public key", "signature")
+
+print(result)
+
+```
+
+
+
 Local Read:
 
 ```python
