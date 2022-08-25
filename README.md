@@ -32,8 +32,6 @@ Make caps:
 from pypact.pact import Pact
 
 pact = Pact()
-
-pact = Pact()
 cap = pact.lang.mk_cap("Coin Transfer", "Capability to transfer designated amount of coin from sender to receiver",
                        "coin.TRANSFER", ["sender_account", "receiver_account", 10.0])
 print(cap)

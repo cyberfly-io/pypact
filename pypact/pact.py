@@ -1,7 +1,7 @@
 import base64
 import hashlib
 import json
-from nacl.signing import SigningKey
+from nacl.signing import SigningKey, VerifyKey
 from nacl import signing
 from nacl.encoding import HexEncoder
 import requests as rt
@@ -81,6 +81,17 @@ class Pact:
             for kp in kp_array:
                 sig_list.append(Pact.Crypto.sign_map(msg, kp))
             return sig_list
+
+        @staticmethod
+        def verify(self, msg, public_key, signature):
+            try:
+                verify_key_hex = bytes(public_key, "utf-8")
+                verify_key = VerifyKey(verify_key_hex, encoder=HexEncoder)
+                signature_bytes = HexEncoder.decode(signature)
+                verify_key.verify(Pact().crypto.hash_bin(msg), signature_bytes)
+                return True
+            except Exception as e:
+                return False
 
     class Api:
         def __init__(self):
