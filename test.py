@@ -1,13 +1,6 @@
 
-from pypact import tools
-
-key_pair = {'publicKey': '10375651f1ca0110468152bb8f47b7b8a469e36dfab1c83adf60cab84b5726d3',
-            'secretKey': '18d3a823139cf60cab0b738e7605bb9e4a2f3ff245c270fa55d197f9b3c4c004',
-            }
-
-result = tools.token_transfer("coin", "k:10375651f1ca0110468152bb8f47b7b8a469e36dfab1c83adf60cab84b5726d3",
-                              "k:03df480e0b300c52901fdff265f0460913fea495f39972321698740536cc38e3",
-                              "03df480e0b300c52901fdff265f0460913fea495f39972321698740536cc38e3", 2.0, key_pair, "1",
-                              "testnet04")
-
-print(result)
+from pypact.pact import Pact
+pubkey = 'd04bbd8f403e583248aa461896bd7518113f89b85c98f3d9596bbfbf30df0bcb'
+msg='{\"pin_no\": \"16\", \"status\": \"on\", \"expiry_time\": 1661419001}'
+sig = '902d00bc675e7631a836c1473e434ccd6fd3462051f581b555a2267f86bf006331e7e2711be051222274d6c1afe29a7fe532365a30f98f82ce7f1c91905c3f0a'
+print(Pact().Crypto.verify(msg, pubkey, sig))
